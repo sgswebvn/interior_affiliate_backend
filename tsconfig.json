@@ -17,5 +17,10 @@
         "types": [
             "node"
         ]
-    }
+    },
+    "exclude": [
+        "prisma",
+        "node_modules",
+        "dist"
+    ]
 }
