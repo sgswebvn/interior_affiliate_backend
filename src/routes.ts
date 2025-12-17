@@ -16,5 +16,10 @@ router.use('/redirect', affiliateRoutes)
 
 // Admin CMS API
 router.use('/admin', authenticate, adminRoutes)
-
+router.get('/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        time: new Date().toISOString()
+    })
+})
 export default router

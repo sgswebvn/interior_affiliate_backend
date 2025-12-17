@@ -7,7 +7,7 @@ import { errorHandler } from './middlewares/error.middleware'
 import { apiLimiter } from './middlewares/rateLimit'
 
 const app = express()
-
+app.set('trust proxy', 1)
 app.use(helmet())
 app.use(morgan('dev'))
 
