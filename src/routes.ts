@@ -3,6 +3,8 @@ import postRoutes from './modules/post/post.public.route'
 import topicRoutes from './modules/topic/topic.public.route'
 import affiliateRoutes from './modules/affiliate/affiliate.public.route'
 import adminRoutes from './modules/admin/admin.route'
+import loginRoutes from './modules/auth/auth.route'
+
 import { authenticate } from './middlewares/auth.middleware'
 
 const router = Router()
@@ -13,6 +15,7 @@ const router = Router()
 router.use('/posts', postRoutes)
 router.use('/topics', topicRoutes)
 router.use('/redirect', affiliateRoutes)
+router.use('/auth', loginRoutes)
 
 // Admin CMS API
 router.use('/admin', authenticate, adminRoutes)
