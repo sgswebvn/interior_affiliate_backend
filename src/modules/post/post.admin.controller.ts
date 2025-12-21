@@ -140,3 +140,21 @@ export async function deletePost(req: Request, res: Response) {
 
     res.json({ success: true })
 }
+
+export async function getPostById(req: Request, res: Response) {
+    const id = Number(req.params.id)
+    const post = await prisma.post.findUnique({
+        where: { id },
+        include: {
+            topic: true,
+            tags: { include: { tag: true } },
+            affiliates: { include: { affiliate: true } },
+        },
+    })
+
+    if (!post) {
+        return res.status(404).json({ message: 'Post not found' })
+    }
+
+    res.json(post)
+}

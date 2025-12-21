@@ -48,3 +48,20 @@ export async function redirectAffiliate(req: Request, res: Response) {
 
     res.redirect(affiliate.url)
 }
+
+export async function getAffiliateById(req: Request, res: Response) {
+    const id = Number(req.params.id)
+    const affiliate = await prisma.affiliate.findUnique({ where: { id } })
+    if (!affiliate) return res.status(404).json({ message: 'Affiliate not found' })
+    res.json(affiliate)
+}
+
+export async function updateAffiliate(req: Request, res: Response) {
+    const id = Number(req.params.id)
+    const affiliate = await prisma.affiliate.update({
+        where: { id },
+        data: req.body,
+    })
+    res.json(affiliate)
+}
+
