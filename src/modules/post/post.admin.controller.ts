@@ -47,6 +47,7 @@ export async function createPost(req: Request, res: Response) {
                 content,
                 intent: data.intent,
                 topicId: data.topicId,
+                thumbnail: data.thumbnail,
                 publishedAt: data.published ? new Date() : null,
             },
         })
@@ -100,6 +101,7 @@ export async function updatePost(req: Request, res: Response) {
                 content,
                 intent: data.intent,
                 topicId: data.topicId,
+                thumbnail: data.thumbnail,
                 publishedAt: data.published ? new Date() : null,
             },
         })

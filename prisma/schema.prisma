@@ -39,6 +39,7 @@ model Post {
   tags        PostTag[]
   affiliates  PostAffiliate[]
   schemaMarkup String?  // custom JSON-LD
+  thumbnail   String?
   publishedAt DateTime?
   createdAt   DateTime  @default(now())
 }

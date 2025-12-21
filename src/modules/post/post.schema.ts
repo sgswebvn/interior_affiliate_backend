@@ -9,6 +9,7 @@ export const createPostSchema = z.object({
         topicId: z.number(),
         tagIds: z.array(z.number()).optional(),
         affiliateIds: z.array(z.number()).optional(),
+        thumbnail: z.string().optional(),
         published: z.boolean().optional(),
     }),
 })
