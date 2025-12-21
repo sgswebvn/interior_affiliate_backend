@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { ZodError } from 'zod'
+import logger from '../config/logger'
 
 export function errorHandler(err: any, req: Request, res: Response, next: NextFunction) {
     // Zod validation errors -> 400
@@ -22,7 +23,7 @@ export function errorHandler(err: any, req: Request, res: Response, next: NextFu
         return res.status(401).json({ message: 'Invalid token' })
     }
 
-    console.error(err)
+    logger.error(err)
 
     const status = err?.status || 500
     const message = process.env.NODE_ENV === 'production' ? 'Internal server error' : err?.message || 'Internal server error'

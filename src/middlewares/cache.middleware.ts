@@ -1,6 +1,6 @@
-
 import { Request, Response, NextFunction } from 'express'
 import redis from '../config/redis'
+import logger from '../config/logger'
 
 type DurationStr = string // "5 minutes"
 
@@ -24,7 +24,7 @@ export const cache = (duration: DurationStr) => {
             return next()
         }
 
-        const key = `cache:${req.originalUrl || req.url}`
+        const key = `cache:${req.originalUrl || req.url} `
         const ttl = parseDuration(duration)
 
         try {
@@ -35,7 +35,7 @@ export const cache = (duration: DurationStr) => {
                 return res.send(JSON.parse(cachedBody))
             }
         } catch (error) {
-            console.error('Redis Get Error:', error)
+            logger.error('Redis Get Error:', error)
             return next() // proceed if error
         }
 
@@ -47,9 +47,9 @@ export const cache = (duration: DurationStr) => {
                 try {
                     // body might be object or string
                     const value = typeof body === 'string' ? body : JSON.stringify(body)
-                    redis?.setex(key, ttl, value).catch(err => console.error('Redis Set Error', err))
+                    redis?.setex(key, ttl, value).catch(err => logger.error('Redis Set Error', err))
                 } catch (e) {
-                    console.error('Cache Serialization Error', e)
+                    logger.error('Cache Serialization Error', e)
                 }
             }
             return originalSend.call(res, body)

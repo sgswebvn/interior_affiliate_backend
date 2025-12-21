@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { prisma } from '../../config/prisma'
+import logger from '../../config/logger'
 
 export async function listAffiliates(req: Request, res: Response) {
     const page = Math.max(Number(req.query.page) || 1, 1)
@@ -43,7 +44,7 @@ export async function redirectAffiliate(req: Request, res: Response) {
             ip: String(ip),
             userAgent: userAgent,
         }
-    }).catch(err => console.error('Click logging failed', err))
+    }).catch(err => logger.error('Click logging failed', err))
 
     res.redirect(affiliate.url)
 }
