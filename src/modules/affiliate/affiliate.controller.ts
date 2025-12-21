@@ -23,6 +23,7 @@ export async function createAffiliate(req: Request, res: Response) {
 
 export async function redirectAffiliate(req: Request, res: Response) {
     const id = Number(req.params.affiliateId)
+    const postId = req.query.postId ? Number(req.query.postId) : null
 
     const affiliate = await prisma.affiliate.findUnique({
         where: { id },
@@ -30,6 +31,19 @@ export async function redirectAffiliate(req: Request, res: Response) {
 
     if (!affiliate) return res.status(404).end()
 
-    // future: log click here
+    // Tracking (Fire & Forget)
+    const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress
+    const userAgent = req.headers['user-agent']
+
+    prisma.clickLog.create({
+        data: {
+            affiliateId: id,
+            postId: postId,
+            url: affiliate.url,
+            ip: String(ip),
+            userAgent: userAgent,
+        }
+    }).catch(err => console.error('Click logging failed', err))
+
     res.redirect(affiliate.url)
 }

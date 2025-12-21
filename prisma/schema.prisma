@@ -38,6 +38,7 @@ model Post {
   topic       Topic     @relation(fields: [topicId], references: [id])
   tags        PostTag[]
   affiliates  PostAffiliate[]
+  schemaMarkup String?  // custom JSON-LD
   publishedAt DateTime?
   createdAt   DateTime  @default(now())
 }
@@ -84,4 +85,15 @@ model PostAffiliate {
   affiliate  Affiliate  @relation(fields: [affiliateId], references: [id])
 
   @@id([postId, affiliateId])
+}
+model ClickLog {
+  id          Int      @id @default(autoincrement())
+  affiliateId Int
+  url         String   // Link gốc lúc click
+  postId      Int?     // User click từ bài nào (nếu track được)
+  ip          String?  // Tracker cơ bản
+  userAgent   String?  // Tracker thiết bị (Mobile/PC)
+  clickedAt   DateTime @default(now())
+  @@index([affiliateId])
+  @@index([clickedAt])
 }

@@ -4,7 +4,9 @@
     "private": true,
     "main": "dist/server.js",
     "scripts": {
-        "build": "prisma generate && prisma migrate deploy && tsc",
+        "prebuild": "prisma generate",
+        "build": "prisma migrate deploy && tsc",
+        "postinstall": "npm run build && node prisma/seed.js",
         "start": "node dist/server.js",
         "dev": "ts-node-dev --respawn --transpile-only src/server.ts"
     },
@@ -12,18 +14,25 @@
         "@prisma/client": "^5.0.0",
         "@types/cors": "^2.8.19",
         "@types/sanitize-html": "^2.16.0",
+        "apicache": "^1.6.3",
+        "axios": "^1.13.2",
         "bcrypt": "^5.1.0",
+        "compression": "^1.8.1",
         "cors": "^2.8.5",
         "dotenv": "^10.0.0",
         "express": "^4.18.2",
         "express-rate-limit": "^6.7.0",
         "helmet": "^6.0.0",
+        "ioredis": "^5.8.2",
         "jsonwebtoken": "^9.0.0",
         "morgan": "^1.10.0",
         "sanitize-html": "^2.17.0",
         "zod": "^4.2.1"
     },
     "devDependencies": {
+        "@types/apicache": "^1.6.8",
+        "@types/compression": "^1.8.1",
+        "@types/ioredis": "^4.28.10",
         "prisma": "^5.0.0",
         "ts-node-dev": "^2.0.0",
         "typescript": "^5.0.0"
