@@ -79,7 +79,20 @@ model Affiliate {
   price String?
   image String?
   url   String
+  
+  brandId Int?
+  brandRelation Brand? @relation(fields: [brandId], references: [id])
+  
   posts PostAffiliate[]
+}
+
+model Brand {
+  id          Int         @id @default(autoincrement())
+  name        String
+  slug        String      @unique
+  description String?
+  logo        String?
+  affiliates  Affiliate[]
 }
 
 model PostAffiliate {
