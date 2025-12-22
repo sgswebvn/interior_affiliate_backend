@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 
 // Ensure a slug is unique for a given model (post | topic | tag)
-export async function ensureUniqueSlug(prisma: any, model: 'post' | 'topic' | 'tag', base: string, excludeId?: number) {
+export async function ensureUniqueSlug(prisma: any, model: 'post' | 'topic' | 'tag' | 'brand', base: string, excludeId?: number) {
     // Build where clause
     const where: any = { slug: { startsWith: base } }
     if (excludeId) {

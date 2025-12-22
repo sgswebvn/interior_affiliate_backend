@@ -6,6 +6,7 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 enum Intent {
   INFORMATIONAL
   COMMERCIAL
@@ -19,6 +20,7 @@ model Admin {
   password  String
   createdAt DateTime @default(now())
 }
+
 enum ContentStatus {
   PUBLISHED
   DRAFT
@@ -26,9 +28,9 @@ enum ContentStatus {
 }
 
 model Topic {
-  id       Int     @id @default(autoincrement())
+  id       Int           @id @default(autoincrement())
   name     String
-  slug     String  @unique
+  slug     String        @unique
   status   ContentStatus @default(PUBLISHED)
   seoTitle String?
   seoDesc  String?
@@ -38,22 +40,23 @@ model Topic {
   parent   Topic?  @relation("TopicHierarchy", fields: [parentId], references: [id])
   children Topic[] @relation("TopicHierarchy")
 }
+
 model Post {
-  id          Int       @id @default(autoincrement())
-  title       String
-  slug        String    @unique
-  excerpt     String?
-  content     String
-  status      ContentStatus @default(PUBLISHED)
-  intent      Intent
-  topicId     Int
-  topic       Topic     @relation(fields: [topicId], references: [id])
-  tags        PostTag[]
-  affiliates  PostAffiliate[]
-  schemaMarkup String?  // custom JSON-LD
-  thumbnail   String?
-  publishedAt DateTime?
-  createdAt   DateTime  @default(now())
+  id           Int             @id @default(autoincrement())
+  title        String
+  slug         String          @unique
+  excerpt      String?
+  content      String
+  status       ContentStatus   @default(PUBLISHED)
+  intent       Intent
+  topicId      Int
+  topic        Topic           @relation(fields: [topicId], references: [id])
+  tags         PostTag[]
+  affiliates   PostAffiliate[]
+  schemaMarkup String? // custom JSON-LD
+  thumbnail    String?
+  publishedAt  DateTime?
+  createdAt    DateTime        @default(now())
 }
 
 model PostTag {
@@ -67,12 +70,13 @@ model PostTag {
 }
 
 model Tag {
-  id    Int     @id @default(autoincrement())
+  id    Int       @id @default(autoincrement())
   name  String
-  slug  String  @unique
+  slug  String    @unique
   type  TagType
   posts PostTag[]
 }
+
 enum TagType {
   PRODUCT
   BRAND
@@ -80,25 +84,26 @@ enum TagType {
   PROBLEM
   PRICE
 }
+
 model Affiliate {
-  id    Int     @id @default(autoincrement())
-  name  String
-  brand String?
-  price String?
-  image String?
-  url   String
+  id     Int           @id @default(autoincrement())
+  name   String
+  brand  String?
+  price  String?
+  image  String?
+  url    String
   status ContentStatus @default(PUBLISHED)
-  
-  brandId Int?
+
+  brandId       Int?
   brandRelation Brand? @relation(fields: [brandId], references: [id])
-  
+
   posts PostAffiliate[]
 }
 
 model Brand {
-  id          Int         @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   name        String
-  slug        String      @unique
+  slug        String        @unique
   description String?
   logo        String?
   status      ContentStatus @default(PUBLISHED)
@@ -109,19 +114,21 @@ model PostAffiliate {
   postId      Int
   affiliateId Int
 
-  post       Post       @relation(fields: [postId], references: [id])
-  affiliate  Affiliate  @relation(fields: [affiliateId], references: [id])
+  post      Post      @relation(fields: [postId], references: [id])
+  affiliate Affiliate @relation(fields: [affiliateId], references: [id])
 
   @@id([postId, affiliateId])
 }
+
 model ClickLog {
   id          Int      @id @default(autoincrement())
   affiliateId Int
-  url         String   // Link gốc lúc click
-  postId      Int?     // User click từ bài nào (nếu track được)
-  ip          String?  // Tracker cơ bản
-  userAgent   String?  // Tracker thiết bị (Mobile/PC)
+  url         String // Link gốc lúc click
+  postId      Int? // User click từ bài nào (nếu track được)
+  ip          String? // Tracker cơ bản
+  userAgent   String? // Tracker thiết bị (Mobile/PC)
   clickedAt   DateTime @default(now())
+
   @@index([affiliateId])
   @@index([clickedAt])
 }
