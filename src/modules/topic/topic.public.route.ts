@@ -1,8 +1,9 @@
 import { Router } from 'express'
-import { listTopics } from './topic.controller'
+import { listPublicTopics, getTopicBySlug } from './topic.public.controller'
 
 const router = Router()
 
-router.get('/', listTopics)
+router.get('/', listPublicTopics)
+router.get('/:slug', getTopicBySlug) // Added by slug support too if needed, or just list
 
 export default router

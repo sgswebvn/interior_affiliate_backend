@@ -19,10 +19,17 @@ model Admin {
   password  String
   createdAt DateTime @default(now())
 }
+enum ContentStatus {
+  PUBLISHED
+  DRAFT
+  PRIVATE
+}
+
 model Topic {
   id       Int     @id @default(autoincrement())
   name     String
   slug     String  @unique
+  status   ContentStatus @default(PUBLISHED)
   seoTitle String?
   seoDesc  String?
   posts    Post[]
@@ -37,6 +44,7 @@ model Post {
   slug        String    @unique
   excerpt     String?
   content     String
+  status      ContentStatus @default(PUBLISHED)
   intent      Intent
   topicId     Int
   topic       Topic     @relation(fields: [topicId], references: [id])
@@ -79,6 +87,7 @@ model Affiliate {
   price String?
   image String?
   url   String
+  status ContentStatus @default(PUBLISHED)
   
   brandId Int?
   brandRelation Brand? @relation(fields: [brandId], references: [id])
@@ -92,6 +101,7 @@ model Brand {
   slug        String      @unique
   description String?
   logo        String?
+  status      ContentStatus @default(PUBLISHED)
   affiliates  Affiliate[]
 }
 

@@ -7,6 +7,7 @@ export async function getPostBySlug(req: Request, res: Response) {
     const post = await prisma.post.findFirst({
         where: {
             slug,
+            status: 'PUBLISHED',
             publishedAt: { not: null },
         },
         include: {
@@ -28,9 +29,9 @@ export async function getPostsByTopic(req: Request, res: Response) {
     const skip = (page - 1) * limit
 
     const [total, posts] = await Promise.all([
-        prisma.post.count({ where: { topic: { slug: topicSlug }, publishedAt: { not: null } } }),
+        prisma.post.count({ where: { topic: { slug: topicSlug }, status: 'PUBLISHED', publishedAt: { not: null } } }),
         prisma.post.findMany({
-            where: { topic: { slug: topicSlug }, publishedAt: { not: null } },
+            where: { topic: { slug: topicSlug }, status: 'PUBLISHED', publishedAt: { not: null } },
             orderBy: { publishedAt: 'desc' },
             select: { id: true, title: true, slug: true, excerpt: true, publishedAt: true },
             skip,
@@ -48,6 +49,7 @@ export async function listPosts(req: Request, res: Response) {
     const search = req.query.search as string
 
     const where: any = {
+        status: 'PUBLISHED',
         publishedAt: { not: null }
     }
 

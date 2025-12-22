@@ -28,8 +28,11 @@ export async function listAffiliates(req: Request, res: Response) {
 }
 
 export async function createAffiliate(req: Request, res: Response) {
+    const { name, brand, brandId, price, image, url, status } = req.body
     const affiliate = await prisma.affiliate.create({
-        data: req.body,
+        data: {
+            name, brand, brandId: brandId ? Number(brandId) : null, price, image, url, status: status || 'PUBLISHED'
+        },
     })
     res.status(201).json(affiliate)
 }
@@ -43,6 +46,7 @@ export async function redirectAffiliate(req: Request, res: Response) {
     })
 
     if (!affiliate) return res.status(404).end()
+    // if (affiliate.status !== 'PUBLISHED') return res.status(404).end() // Optional: Block private links?
 
     // Tracking (Fire & Forget)
     const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress
@@ -70,9 +74,21 @@ export async function getAffiliateById(req: Request, res: Response) {
 
 export async function updateAffiliate(req: Request, res: Response) {
     const id = Number(req.params.id)
+    const { name, brand, brandId, price, image, url, status } = req.body;
+
+    // Explicit update to prevent unwanted field injection
+    const data: any = {};
+    if (name) data.name = name;
+    if (brand !== undefined) data.brand = brand;
+    if (brandId !== undefined) data.brandId = brandId ? Number(brandId) : null;
+    if (price !== undefined) data.price = price;
+    if (image !== undefined) data.image = image;
+    if (url) data.url = url;
+    if (status) data.status = status;
+
     const affiliate = await prisma.affiliate.update({
         where: { id },
-        data: req.body,
+        data,
     })
     res.json(affiliate)
 }

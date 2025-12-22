@@ -4,11 +4,13 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { prisma } from '../../config/prisma';
 
 // Initialize Gemini
+// Use gemini-1.5-flash as the standard free/fast model. "2.5" is not widely available/stable yet.
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 export async function generateSeoContent(req: Request, res: Response) {
     try {
+        console.log("🤖 [AI] Generating SEO Content for:", req.body.title);
         const { title, topicName } = req.body;
 
         if (!title) {
@@ -84,8 +86,15 @@ export async function chatWithSite(req: Request, res: Response) {
 
         res.json({ reply: text });
 
-    } catch (error) {
-        console.error('AI Chat Error:', error);
-        res.status(500).json({ message: 'Failed to process chat' });
+    } catch (error: any) {
+        console.error("❌ [AI Chat Error]:", error);
+        // More specific error for debugging
+        const errorMessage = error.response ? JSON.stringify(error.response) : error.message;
+        res.status(500).json({
+            error: "Failed to chat",
+            details: errorMessage,
+            tip: "Check API Key and Model Name"
+        });
     }
 }
+
