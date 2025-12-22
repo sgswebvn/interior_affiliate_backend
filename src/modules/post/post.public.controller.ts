@@ -47,6 +47,9 @@ export async function listPosts(req: Request, res: Response) {
     const limit = Math.min(Number(req.query.limit) || 12, 50)
     const skip = (page - 1) * limit
     const search = req.query.search as string
+    const topicSlug = req.query.topic as string
+    const tagSlug = req.query.tag as string
+    const sort = req.query.sort as string // 'newest' | 'oldest'
 
     const where: any = {
         status: 'PUBLISHED',
@@ -57,11 +60,26 @@ export async function listPosts(req: Request, res: Response) {
         where.title = { contains: search, mode: 'insensitive' }
     }
 
+    if (topicSlug) {
+        where.topic = { slug: topicSlug }
+    }
+
+    if (tagSlug) {
+        where.tags = { some: { tag: { slug: tagSlug } } }
+    }
+
+    const orderBy: any = {}
+    if (sort === 'oldest') {
+        orderBy.publishedAt = 'asc'
+    } else {
+        orderBy.publishedAt = 'desc' // Default to newest
+    }
+
     const [total, posts] = await Promise.all([
         prisma.post.count({ where }),
         prisma.post.findMany({
             where,
-            orderBy: { publishedAt: 'desc' },
+            orderBy,
             select: {
                 id: true,
                 title: true,
