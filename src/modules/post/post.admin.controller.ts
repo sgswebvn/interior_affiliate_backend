@@ -8,10 +8,23 @@ export async function adminListPosts(req: Request, res: Response) {
     const page = Math.max(Number(req.query.page) || 1, 1)
     const limit = Math.min(Number(req.query.limit) || 20, 100)
     const skip = (page - 1) * limit
+    const search = req.query.search as string
+    const topicId = req.query.topicId ? Number(req.query.topicId) : undefined
+
+    const where: any = {}
+
+    if (search) {
+        where.title = { contains: search, mode: 'insensitive' }
+    }
+
+    if (topicId) {
+        where.topicId = topicId
+    }
 
     const [total, posts] = await Promise.all([
-        prisma.post.count(),
+        prisma.post.count({ where }),
         prisma.post.findMany({
+            where,
             skip,
             take: limit,
             orderBy: { createdAt: 'desc' },

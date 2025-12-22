@@ -26,6 +26,10 @@ model Topic {
   seoTitle String?
   seoDesc  String?
   posts    Post[]
+
+  parentId Int?
+  parent   Topic?  @relation("TopicHierarchy", fields: [parentId], references: [id])
+  children Topic[] @relation("TopicHierarchy")
 }
 model Post {
   id          Int       @id @default(autoincrement())

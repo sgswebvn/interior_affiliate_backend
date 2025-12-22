@@ -7,10 +7,19 @@ export async function listTags(req: Request, res: Response) {
     const page = Math.max(Number(req.query.page) || 1, 1)
     const limit = Math.min(Number(req.query.limit) || 50, 200)
     const skip = (page - 1) * limit
+    const search = req.query.search as string
 
     // Explicitly cast to string to avoid lint error about unknown type
     const typeStr = req.query.type ? String(req.query.type) : undefined
-    const where = typeStr ? { type: typeStr as any } : {}
+    const where: any = {}
+
+    if (typeStr) {
+        where.type = typeStr as any
+    }
+
+    if (search) {
+        where.name = { contains: search, mode: 'insensitive' }
+    }
 
     const [total, tags] = await Promise.all([
         prisma.tag.count({ where }),

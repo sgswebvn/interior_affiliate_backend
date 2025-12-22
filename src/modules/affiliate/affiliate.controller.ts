@@ -6,10 +6,22 @@ export async function listAffiliates(req: Request, res: Response) {
     const page = Math.max(Number(req.query.page) || 1, 1)
     const limit = Math.min(Number(req.query.limit) || 50, 200)
     const skip = (page - 1) * limit
+    const search = req.query.search as string
+    const brand = req.query.brand as string
+
+    const where: any = {}
+
+    if (search) {
+        where.name = { contains: search, mode: 'insensitive' }
+    }
+
+    if (brand) {
+        where.brand = brand
+    }
 
     const [total, affiliates] = await Promise.all([
-        prisma.affiliate.count(),
-        prisma.affiliate.findMany({ skip, take: limit, orderBy: { id: 'desc' } }),
+        prisma.affiliate.count({ where }),
+        prisma.affiliate.findMany({ where, skip, take: limit, orderBy: { id: 'desc' } }),
     ])
 
     res.json({ total, page, limit, data: affiliates })
