@@ -28,6 +28,7 @@ export async function listTopics(req: Request, res: Response) {
             take: limit,
             orderBy: { id: 'asc' },
             include: {
+                parent: true,
                 children: {
                     include: { children: true } // Support 3 levels deep per user request
                 }
