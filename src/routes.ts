@@ -6,6 +6,7 @@ import affiliateRoutes from './modules/affiliate/affiliate.public.route'
 import adminRoutes from './modules/admin/admin.route'
 import loginRoutes from './modules/auth/auth.route'
 import aiRoutes from './modules/ai/ai.route'
+import productRoutes from './modules/product/product.public.route'
 import subscriberRoutes from './modules/subscriber/subscriber.route'
 import { authenticate } from './middlewares/auth.middleware'
 
@@ -20,6 +21,7 @@ router.use('/tags', tagRoutes)
 router.use('/redirect', affiliateRoutes)
 router.use('/auth', loginRoutes)
 router.use('/ai', aiRoutes)
+router.use('/products', productRoutes)
 router.use('/', subscriberRoutes) // Exposes /subscribe 
 // Wait, ai.route.ts has both. 
 // generate-seo has 'authenticate'. chat has none.

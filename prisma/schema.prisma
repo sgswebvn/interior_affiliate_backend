@@ -31,10 +31,12 @@ model Topic {
   id       Int           @id @default(autoincrement())
   name     String
   slug     String        @unique
+  image    String?       // ADDED: Category Image
   status   ContentStatus @default(PUBLISHED)
   seoTitle String?
   seoDesc  String?
   posts    Post[]
+  products Product[]     // ADDED: Relation to Product
 
   parentId Int?
   parent   Topic?  @relation("TopicHierarchy", fields: [parentId], references: [id])
@@ -47,16 +49,52 @@ model Post {
   slug         String          @unique
   excerpt      String?
   content      String
+  gallery      String[]        @default([]) // ADDED: Multi-image gallery
   status       ContentStatus   @default(PUBLISHED)
   intent       Intent
   topicId      Int
   topic        Topic           @relation(fields: [topicId], references: [id])
   tags         PostTag[]
   affiliates   PostAffiliate[]
-  schemaMarkup String? // custom JSON-LD
+  schemaMarkup String?
   thumbnail    String?
   publishedAt  DateTime?
   createdAt    DateTime        @default(now())
+}
+
+model Product {
+  id            Int           @id @default(autoincrement())
+  name          String
+  slug          String        @unique
+  price         String?       // e.g. "15.000.000đ"
+  originalPrice String?       // e.g. "20.000.000đ"
+  description   String        // HTML content
+  images        String[]      @default([]) // Slider images
+  affiliateLink String?       // Buy Now URL
+  specs         Json?         // Technical specifications { "Dimensions": "2x3m", "Material": "Leather" }
+  rating        Float         @default(5.0)
+  
+  status        ContentStatus @default(PUBLISHED)
+  
+  topicId       Int
+  topic         Topic         @relation(fields: [topicId], references: [id])
+  
+  brandId       Int?
+  brand         Brand?        @relation(fields: [brandId], references: [id])
+  
+  comments      Comment[]
+  
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  guestName String   // No login required
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 }
 
 model PostTag {
@@ -108,6 +146,7 @@ model Brand {
   logo        String?
   status      ContentStatus @default(PUBLISHED)
   affiliates  Affiliate[]
+  products    Product[]     // ADDED: Relation to Product
 }
 
 model PostAffiliate {
@@ -123,10 +162,10 @@ model PostAffiliate {
 model ClickLog {
   id          Int      @id @default(autoincrement())
   affiliateId Int
-  url         String // Link gốc lúc click
-  postId      Int? // User click từ bài nào (nếu track được)
-  ip          String? // Tracker cơ bản
-  userAgent   String? // Tracker thiết bị (Mobile/PC)
+  url         String
+  postId      Int?
+  ip          String?
+  userAgent   String?
   clickedAt   DateTime @default(now())
 
   @@index([affiliateId])
