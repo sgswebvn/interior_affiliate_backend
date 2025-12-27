@@ -1,32 +1,42 @@
 import { Request, Response, NextFunction } from 'express'
 import { ZodError } from 'zod'
 import logger from '../config/logger'
+import { AppError } from '../utils/AppError'
 
 export function errorHandler(err: any, req: Request, res: Response, next: NextFunction) {
-    // Zod validation errors -> 400
+    let error = err;
+
+    // Convert known errors to AppError
     if (err instanceof ZodError) {
-        return res.status(400).json({ message: 'Validation failed', errors: err.flatten() })
+        return res.status(400).json({ status: 'fail', message: 'Validation failed', errors: err.flatten() })
     }
 
-    // Prisma unique constraint (P2002) -> 409
     if (err && err.code === 'P2002') {
-        return res.status(409).json({ message: 'Resource already exists', meta: err.meta })
+        return res.status(409).json({ status: 'fail', message: 'Resource already exists', meta: err.meta })
     }
 
-    // Other Prisma errors -> 400 with some detail
-    if (err && typeof err.code === 'string' && err.code.startsWith('P')) {
-        return res.status(400).json({ message: 'Database error', detail: err.meta || err.message })
+    // Explicit AppError
+    if (error instanceof AppError) {
+        return res.status(error.statusCode).json({
+            status: error.status,
+            message: error.message
+        })
     }
 
-    // JWT errors
-    if (err && err.name === 'JsonWebTokenError') {
-        return res.status(401).json({ message: 'Invalid token' })
-    }
-
+    // Default error
     logger.error(err)
 
-    const status = err?.status || 500
-    const message = process.env.NODE_ENV === 'production' ? 'Internal server error' : err?.message || 'Internal server error'
+    if (process.env.NODE_ENV === 'development') {
+        return res.status(500).json({
+            status: 'error',
+            message: err.message,
+            stack: err.stack,
+            error: err
+        })
+    }
 
-    res.status(status).json({ message })
+    return res.status(500).json({
+        status: 'error',
+        message: 'Internal server error'
+    })
 }

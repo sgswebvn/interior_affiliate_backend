@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { listPublicTopics, getTopicBySlug } from './topic.public.controller'
+import { listPublicTopics, getTopicBySlug } from './topic.controller'
 
 const router = Router()
 

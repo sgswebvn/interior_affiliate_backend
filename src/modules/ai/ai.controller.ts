@@ -4,8 +4,12 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { prisma } from '../../config/prisma';
 
 // Initialize Gemini
-// Use gemini-1.5-flash as the standard free/fast model. "2.5" is not widely available/stable yet.
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+// Use gemini-1.5-flash as the standard free/fast model.
+const apiKey = process.env.GEMINI_API_KEY;
+if (!apiKey) {
+    console.error("⚠️ Checking AI: GEMINI_API_KEY is missing in .env");
+}
+const genAI = new GoogleGenerativeAI(apiKey || 'dummy_key'); // Prevent crash on init, fail on call
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 export async function generateSeoContent(req: Request, res: Response) {

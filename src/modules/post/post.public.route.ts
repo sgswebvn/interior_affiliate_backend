@@ -1,13 +1,9 @@
 import { Router } from 'express'
-import { getPostBySlug, getPostsByTopic, listPosts } from './post.public.controller'
-import { cache } from '../../middlewares/cache.middleware'
-import { CACHE_TTL } from '../../config/constants'
+import { listPublicPosts, getPostBySlug } from './post.controller'
 
 const router = Router()
 
-router.get('/', listPosts)
-router.get('/:slug', cache(CACHE_TTL.POST_DETAIL), getPostBySlug)
-router.get('/topic/:topicSlug', cache(CACHE_TTL.TOPIC_LIST), getPostsByTopic)
+router.get('/', listPublicPosts)
+router.get('/:slug', getPostBySlug)
 
 export default router
-export { router as postPublicRouter }
