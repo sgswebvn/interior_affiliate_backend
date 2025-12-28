@@ -134,14 +134,14 @@ export class PostService {
             const existing = await tx.post.findUnique({ where: { id } })
             if (!existing) throw new AppError('Post not found', 404)
 
-            let slug = undefined
+            let slug: string | undefined = undefined
             if (data.slug && data.slug !== existing.slug) {
                 slug = await ensureUniqueSlug(tx, 'post', slugify(data.slug), id)
             } else if (data.title && !data.slug) {
                 // Determine if we should auto-update slug. Usually NO for SEO stability.
             }
 
-            let content = undefined
+            let content: string | undefined = undefined
             if (data.content !== undefined) {
                 content = sanitizeHtml(data.content, {
                     allowedTags: ['p', 'a', 'ul', 'ol', 'li', 'strong', 'em', 'img', 'h1', 'h2', 'h3', 'blockquote', 'div', 'span', 'br'],
